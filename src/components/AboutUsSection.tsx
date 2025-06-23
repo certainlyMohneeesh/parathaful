@@ -163,7 +163,7 @@ export default function AboutUsSection() {
               </p>
               
               <p className="text-lg leading-relaxed">
-                How? We don’t take shortcuts. The potatoes are hand-mashed, the masalas are ground fresh by Nani, and the dough? Let’s just say it’s soft enough to bring peace to a chaotic Monday.
+                How? We don’t take shortcuts. The potatoes are hand-mashed, the masalas are ground fresh by Dadi, and the dough? Let’s just say it’s soft enough to bring peace to a chaotic Monday.
               </p>
             </div>
 
