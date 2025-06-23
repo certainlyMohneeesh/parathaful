@@ -1,26 +1,483 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-family-inter: 'Inter', system-ui, sans-serif;
+  
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+  --color-orange-400: #fb923c;
+  --color-orange-500: #f97316;
+  --color-rose-800: #8b1538;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  height: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+* {
+  box-sizing: border-box;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* ONLY APPLY CUSTOM SCROLLBAR TO HTML ELEMENT */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(220, 38, 38, 0.6) transparent;
+}
+
+html::-webkit-scrollbar {
+  width: 6px;
+  display: block;
+}
+
+html::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: rgba(220, 38, 38, 0.6);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: rgba(220, 38, 38, 0.8);
+}
+
+html::-webkit-scrollbar-thumb:active {
+  background: #dc2626;
+}
+
+/* Fixed Navbar Styles */
+.navbar-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+}
+
+/* Navbar transitions */
+.navbar-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Add padding to body to compensate for fixed navbar */
+body {
+  padding-top: 0; /* We'll handle this with margin on first section */
+}
+
+/* Stroke text effect */
+.stroke-text {
+  -webkit-text-stroke: 2px #dc2626;
+  -webkit-text-fill-color: transparent;
+  text-stroke: 2px #dc2626;
+  text-fill-color: transparent;
+  font-weight: 900;
+}
+
+/* Ensure smooth scrolling performance */
+.gsap-element {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Performance optimization for background scaling */
+.hero-background {
+  will-change: transform;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+/* Gallery specific styles */
+.horizontal-gallery-container {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  -webkit-overflow-scrolling: touch;
+  height: 80vh;
+  width: 100vw;
+}
+
+.horizontal-gallery-scroll {
+  will-change: transform;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.gallery-item {
+  position: relative;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  /* Ensure consistent dimensions */
+  width: 350px !important;
+  height: 500px !important;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.gallery-item:hover {
+  transform: scale(1.02);
+  z-index: 10;
+}
+
+.gallery-item img {
+  /* Force consistent sizing */
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.hero-section {
+  position: relative;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Ensure sections don't get hidden behind fixed navbar */
+.section {
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .gallery-item {
+    width: 280px !important;
+    height: 420px !important;
+    margin: 0 12px;
+  }
+
+  html, body {
+    overflow-x: hidden;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (max-width: 480px) {
+  .gallery-item {
+    width: 240px !important;
+    height: 360px !important;
+    margin: 0 8px;
+  }
 }
+
+/* Footer styles */
+.footer-section {
+  background: linear-gradient(135deg, #c41e3a 0%, #8b1538 100%);
+  color: white;
+  padding: 80px 0 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(180deg, #f5f5f5 0%, transparent 100%);
+  border-radius: 0 0 50px 50px;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.footer-content {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.footer-title {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 60px;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.contact-form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-row {
+  display: grid;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.form-row:first-child {
+  grid-template-columns: 2fr 1fr;
+}
+
+.form-row:nth-child(2) {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 16px;
+  padding: 15px 0;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 300;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-bottom-color: white;
+  transform: translateY(-2px);
+}
+
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0 center;
+  background-repeat: no-repeat;
+  background-size: 1.5rem;
+  padding-right: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-select option {
+  background: #c41e3a;
+  color: white;
+}
+
+.submit-btn {
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+  padding: 15px 40px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.submit-btn:hover {
+  background: white;
+  color: #c41e3a;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 40px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-nav {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.footer-link:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+.footer-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: white;
+  transition: width 0.3s ease;
+}
+
+.footer-link:hover::after {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .footer-section {
+    padding: 60px 0 30px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .footer-nav {
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .footer-title {
+    font-size: 2rem;
+    margin-bottom: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-nav {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .footer-container {
+    padding: 0 15px;
+  }
+}
+
+.shrikhand-regular {
+  font-family: "Shrikhand", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Full Screen Menu Styles */
+.menu-overlay {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.menu-item {
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-item::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: width 0.3s ease;
+}
+
+.menu-item:hover::after {
+  width: 50%;
+}
+
+/* Menu text effects */
+.menu-item a {
+  position: relative;
+  display: inline-block;
+  transition: transform 0.3s ease;
+  text-align: center;
+  width: 100%;
+}
+
+.menu-item:hover a {
+  transform: translateX(5px);
+}
+
+/* Responsive menu text with better centering */
+@media (max-width: 1024px) {
+  .menu-item a {
+    font-size: 3.5rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-item a {
+    font-size: 2.5rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .menu-item {
+    padding: 0.25rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-item a {
+    font-size: 2rem !important;
+    line-height: 1.1 !important;
+  }
+  
+  .menu-item {
+    padding: 0.125rem 0;
+  }
+}
+
+/* Ensure perfect vertical centering */
+@media (max-height: 600px) {
+  .menu-item a {
+    font-size: 1.8rem !important;
+  }
+}
+
