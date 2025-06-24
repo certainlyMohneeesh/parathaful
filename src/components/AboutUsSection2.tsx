@@ -18,18 +18,17 @@ export default function AboutUsSection2() {
     if (!section || !headline || !backgroundImage) return;
     
     try {
-      // Set initial states with enhanced desktop values
+      // Set initial states
       gsap.set(headline, {
         opacity: 0,
-        y: isMobile ? 50 : 100, // More dramatic for desktop
+        y: 50,
         force3D: true,
       });
       
       gsap.set(backgroundImage, {
-        scale: isMobile ? 1.1 : 1.3, // More dramatic starting scale for desktop
+        scale: isMobile ? 1.1 : 1.2,
         opacity: 0.2,
         force3D: true,
-        transformOrigin: "center center",
       });
       
       // For low performance devices, just fade in without complex animations
@@ -48,48 +47,36 @@ export default function AboutUsSection2() {
         return;
       }
       
-      // ENHANCED DESKTOP ANIMATIONS
+      // Create timeline for entrance animations - optimized for mobile
+      const duration = isMobile ? 1.5 : 2;
+      
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top 80%",
+          toggleActions: "play none none reverse",
+        }
+      });
+      
+      tl.to(backgroundImage, {
+        scale: 1,
+        opacity: 0.2,
+        duration: duration,
+        ease: "power2.out",
+        force3D: true,
+      })
+      .to(headline, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: "power3.out",
+        force3D: true,
+      }, "-=1");
+      
+      // Only add parallax effect on non-mobile devices
       if (!isMobile) {
-        // Create a more dramatic timeline for desktop
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start: "top 70%", // Start earlier on desktop
-            end: "center center",
-            toggleActions: "play none none reverse",
-          }
-        });
-        
-        tl.to(backgroundImage, {
-          scale: 1,
-          opacity: 0.4, // More visible on desktop
-          rotation: -5, // Add subtle rotation for desktop
-          duration: 2.5, // Longer, smoother animation
-          ease: "power2.inOut",
-          force3D: true,
-        })
-        .to(headline, {
-          opacity: 1,
-          y: 0,
-          duration: 1.5,
-          ease: "power3.out",
-          force3D: true,
-        }, "-=2");
-        
-        // Add floating animation to background for desktop
-        gsap.to(backgroundImage, {
-          y: -30,
-          x: 10,
-          rotation: -3,
-          duration: 6,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut"
-        });
-        
-        // Enhanced parallax effect for desktop
         createAnimation(backgroundImage, {
-          y: -80, // More dramatic parallax on desktop
+          y: -50, // Reduced parallax amount
           scrollTrigger: {
             trigger: section,
             start: "top bottom",
@@ -97,57 +84,6 @@ export default function AboutUsSection2() {
             scrub: 1,
           }
         });
-        
-        // Text reveal effect for desktop
-        const words = headline.innerText.split(' ');
-        headline.innerHTML = '';
-        
-        words.forEach((word, index) => {
-          const span = document.createElement('span');
-          span.innerHTML = word + ' ';
-          span.style.display = 'inline-block';
-          span.style.opacity = '0';
-          span.style.transform = 'translateY(20px)';
-          headline.appendChild(span);
-          
-          gsap.to(span, {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            delay: 0.1 * index,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: section,
-              start: "top 70%",
-            }
-          });
-        });
-      } else {
-        // Mobile optimized animations
-        const duration = 1.5;
-        
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          }
-        });
-        
-        tl.to(backgroundImage, {
-          scale: 1,
-          opacity: 0.2,
-          duration: duration,
-          ease: "power2.out",
-          force3D: true,
-        })
-        .to(headline, {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-          force3D: true,
-        }, "-=1");
       }
     } catch (error) {
       console.error('Error in AboutUsSection2 animations:', error);
