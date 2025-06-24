@@ -23,14 +23,15 @@ export default function HeroSection() {
 
     // Initial setup - background starts zoomed in
     gsap.set(background, {
-      scale: 1.2,
-      transformOrigin: "center center"
+      scale: 1,
+      transformOrigin: "center center",
+      ease: "power1.inOut"
     });
 
     // Background zoom out animation on scroll
     const backgroundAnimation = gsap.to(background, {
-      scale: 1,
-      ease: "none",
+      scale: 2,
+      ease: "",
       scrollTrigger: {
         trigger: hero,
         start: "top top",
@@ -52,6 +53,7 @@ export default function HeroSection() {
         scrub: 1,
       }
     });
+
 
     // Cleanup function
     return () => {
