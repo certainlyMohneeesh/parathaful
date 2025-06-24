@@ -137,7 +137,7 @@ export default function AboutUsSection() {
         className="absolute top-32 left-96 w-64 h-32 bg-gradient-to-r from-orange-400 to-orange-500 rounded-lg shadow-lg"
       ></div>
 
-      {/* Cloud Decoration */}
+      {/* Cloud Decoration
       <div 
         ref={cloudRef}
         className="absolute top-20 right-20 text-white opacity-30"
@@ -145,7 +145,7 @@ export default function AboutUsSection() {
         <svg width="120" height="80" viewBox="0 0 120 80" fill="currentColor">
           <path d="M90 40c0-11.046-8.954-20-20-20s-20 8.954-20 20c-5.523 0-10 4.477-10 10s4.477 10 10 10h40c5.523 0 10-4.477 10-10s-4.477-10-10-10z"/>
         </svg>
-      </div>
+      </div> */}
 
       <div className="container mx-auto px-6 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-screen">
