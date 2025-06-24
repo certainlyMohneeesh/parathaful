@@ -60,7 +60,7 @@ export default function AboutUsSection2() {
       
       tl.to(backgroundImage, {
         scale: 1,
-        opacity: 0.2,
+        opacity: 5,
         duration: duration,
         ease: "power2.out",
         force3D: true,
