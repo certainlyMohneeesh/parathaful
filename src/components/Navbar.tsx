@@ -122,7 +122,7 @@ export default function Navbar() {
 
   // Use consistent classes for SSR
   const navbarClasses = `
-    fixed top-0 left-0 right-0 z-40 p-4 lg:p-6 transition-all duration-300 ease-in-out safe-area-inset-top
+    fixed top-0 left-0 right-0 z-40 p-6 transition-all duration-300 ease-in-out
     ${isClient && !isDarkBackground 
       ? 'bg-white shadow-lg' 
       : 'bg-transparent'
@@ -130,12 +130,12 @@ export default function Navbar() {
   `;
 
   const logoClasses = `
-    font-bold text-xl lg:text-2xl transition-colors duration-300
+    font-bold text-2xl transition-colors duration-300
     ${isClient && !isDarkBackground ? 'text-red-600' : 'text-white'}
   `;
 
   const buttonClasses = `
-    border px-3 py-2 lg:px-4 lg:py-2 rounded transition-all duration-300 text-sm lg:text-base
+    border px-4 py-2 rounded transition-all duration-300
     ${isClient && !isDarkBackground
       ? 'border-red-600 text-red-600 hover:bg-red-600 hover:text-white'
       : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
@@ -143,7 +143,7 @@ export default function Navbar() {
   `;
 
   const menuButtonClasses = `
-    border px-4 py-2 lg:px-6 lg:py-2 rounded transition-all duration-300 flex items-center space-x-2 cursor-pointer text-sm lg:text-base
+    border px-6 py-2 rounded transition-all duration-300 flex items-center space-x-2 cursor-pointer
     ${isClient && !isDarkBackground
       ? 'border-red-600 text-red-600 hover:bg-red-600 hover:text-white'
       : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
@@ -151,24 +151,24 @@ export default function Navbar() {
   `;
 
   const mobileButtonClasses = `
-    md:hidden transition-colors duration-300 cursor-pointer p-2 -mr-2
+    md:hidden transition-colors duration-300 cursor-pointer
     ${isClient && !isDarkBackground ? 'text-red-600' : 'text-white'}
   `;
 
   return (
     <>
       <nav className={navbarClasses}>
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
+        <div className="flex items-center justify-between">
           {/* Logo */}
           <div className={`${logoClasses} shrikhand-regular`}>
             ParathaFul
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-3 lg:space-x-4">
+          <div className="hidden md:flex items-center space-x-4">
             {/* Cart */}
             <button className={`${buttonClasses} flex items-center space-x-2`}>
-              <ShoppingBag size={18} className="lg:w-5 lg:h-5" />
+              <ShoppingBag size={20} />
               <span>0</span>
             </button>
 
@@ -183,7 +183,7 @@ export default function Navbar() {
               className={menuButtonClasses}
             >
               <span>Menu</span>
-              <Menu size={18} className="lg:w-5 lg:h-5" />
+              <Menu size={20} />
             </button>
           </div>
 
@@ -191,7 +191,6 @@ export default function Navbar() {
           <button 
             onClick={toggleMenu}
             className={mobileButtonClasses}
-            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -201,7 +200,7 @@ export default function Navbar() {
       {/* Full Screen Menu Overlay */}
       <div 
         ref={menuRef}
-        className="fixed inset-0 z-50 safe-area-inset-top safe-area-inset-bottom"
+        className="fixed inset-0 z-50"
         style={{ display: 'none' }}
       >
         {/* Background */}
@@ -213,17 +212,16 @@ export default function Navbar() {
         {/* Close Button */}
         <button 
           onClick={toggleMenu}
-          className="absolute top-4 right-4 lg:top-6 lg:right-6 text-white hover:text-red-200 transition-colors duration-300 z-60 p-2"
-          aria-label="Close menu"
+          className="absolute top-6 right-6 text-white hover:text-red-200 transition-colors duration-300 z-60"
         >
-          <X size={28} className="lg:w-8 lg:h-8" />
+          <X size={32} />
         </button>
 
         {/* Menu Content - Perfectly Centered */}
-        <div className="absolute inset-0 flex items-center justify-center p-4 lg:p-6">
-          <div className="text-center w-full max-w-4xl">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center w-full max-w-4xl px-6">
             {/* Menu Items */}
-            <div className="space-y-4 md:space-y-6 lg:space-y-8">
+            <div className="space-y-6 md:space-y-8">
               {[
                 { label: 'HOME', href: '#' },
                 { label: 'ABOUT US', href: '#' },
@@ -241,12 +239,8 @@ export default function Navbar() {
                 >
                   <a
                     href={item.href}
-                    className="block text-white hover:text-red-200 transition-colors duration-300 uppercase leading-tight font-bold tracking-wider"
-                    style={{ 
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: 'clamp(1.5rem, 6vw, 4rem)',
-                      lineHeight: '1.1'
-                    }}
+                    className="block text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider hover:text-red-200 transition-colors duration-300 uppercase leading-tight"
+                    style={{ fontFamily: 'Inter, sans-serif' }}
                     onClick={toggleMenu}
                   >
                     {item.label}
@@ -258,7 +252,7 @@ export default function Navbar() {
         </div>
 
         {/* Decorative Elements */}
-        <div className="absolute bottom-0 left-0 w-full h-20 lg:h-32 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
       </div>
     </>
   );

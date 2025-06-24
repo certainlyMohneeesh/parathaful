@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useMobileOptimizedGSAP } from '@/hooks/useMobileOptimizedGSAP';
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -13,6 +14,7 @@ export default function HeroSection() {
   const backgroundRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef(null);
+  const { isMobile, createMobileOptimizedAnimation } = useMobileOptimizedGSAP();
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -21,36 +23,35 @@ export default function HeroSection() {
 
     if (!hero || !background || !content) return;
 
-    // Initial setup - background starts zoomed in
+    // Mobile-optimized initial setup
     gsap.set(background, {
-      scale: 1,
+      scale: isMobile ? 1.1 : 1, // Less aggressive scaling on mobile
       transformOrigin: "center center",
-      ease: "power1.inOut"
+      force3D: true,
     });
 
-    // Background zoom out animation on scroll
-    const backgroundAnimation = gsap.to(background, {
-      scale: 2,
-      ease: "",
+    // Simplified mobile animations
+    const backgroundAnimation = createMobileOptimizedAnimation(background, {
+      scale: isMobile ? 1.5 : 2, // Reduced scale for mobile
       scrollTrigger: {
         trigger: hero,
         start: "top top",
         end: "bottom top",
-        scrub: 1,
+        scrub: isMobile ? 0.5 : 1, // Less aggressive scrub on mobile
         pin: false,
+        invalidateOnRefresh: true, // Important for mobile
       }
     });
 
-    // Content fade out animation on scroll
-    const contentAnimation = gsap.to(content, {
+    const contentAnimation = createMobileOptimizedAnimation(content, {
       opacity: 0.3,
-      y: -50,
-      ease: "none",
+      y: isMobile ? -25 : -50, // Reduced movement on mobile
       scrollTrigger: {
         trigger: hero,
         start: "top top",
         end: "bottom top",
-        scrub: 1,
+        scrub: isMobile ? 0.5 : 1,
+        invalidateOnRefresh: true,
       }
     });
 

@@ -171,6 +171,31 @@ body {
   html, body {
     overflow-x: hidden;
   }
+
+  .gsap-element {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Reduce animation complexity on mobile */
+  .horizontal-gallery-scroll {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+
+  /* Fix mobile viewport issues */
+  .hero-section {
+    height: 100vh;
+    height: 100svh; /* Use small viewport height for mobile */
+  }
+
+  .horizontal-gallery-container {
+    height: 80vh;
+    height: 80svh;
+  }
 }
 
 @media (max-width: 480px) {
@@ -478,6 +503,31 @@ body {
 @media (max-height: 600px) {
   .menu-item a {
     font-size: 1.8rem !important;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Disable hover effects on touch devices */
+  .gallery-item:hover {
+    transform: none;
+  }
+  
+  .menu-item:hover a {
+    transform: none;
+  }
+  
+  .menu-item:hover::after {
+    width: 0;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .gsap-element {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

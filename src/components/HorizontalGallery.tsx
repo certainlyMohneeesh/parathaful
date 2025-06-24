@@ -3,12 +3,14 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
+import { useMobileOptimizedGSAP } from '@/hooks/useMobileOptimizedGSAP';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const HorizontalGallery = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { isMobile, createMobileOptimizedAnimation } = useMobileOptimizedGSAP();
 
   const images = [
     { src: '/mintchutney.png', alt: 'Charcoal-grilled paratha with mint chutney.' },
@@ -27,38 +29,47 @@ const HorizontalGallery = () => {
 
     if (!container || !scrollContainer) return;
 
-    // Calculate the width of one set of images
-    const singleSetWidth = images.length * (350 + 16); // 350px width + 16px gap
+    // Mobile-specific calculations
+    const itemWidth = isMobile ? 280 : 350;
+    const gap = isMobile ? 12 : 16;
+    const singleSetWidth = images.length * (itemWidth + gap);
 
-    // Set initial position
-    gsap.set(scrollContainer, { x: 0 });
+    // Force hardware acceleration
+    gsap.set(scrollContainer, { 
+      x: 0,
+      force3D: true,
+      transformStyle: "preserve-3d"
+    });
 
-    // Create infinite loop animation
+    // Simplified animation for mobile
     const tl = gsap.timeline({ repeat: -1 });
     
     tl.to(scrollContainer, {
       x: -singleSetWidth,
-      duration: images.length * 2, // Adjust speed as needed
+      duration: isMobile ? images.length * 1.5 : images.length * 2, // Faster on mobile
       ease: 'none',
+      force3D: true,
     });
 
-    // Optional: Add scroll-based speed control
+    // Mobile-optimized scroll trigger
     ScrollTrigger.create({
       trigger: container,
       start: 'top bottom',
       end: 'bottom top',
       onUpdate: (self) => {
-        // Speed up animation when in view
-        const progress = self.progress;
-        tl.timeScale(0.5 + progress * 1.5); // Adjust multiplier for speed variation
-      }
+        if (!isMobile) {
+          const progress = self.progress;
+          tl.timeScale(0.5 + progress * 1.5);
+        }
+      },
+      invalidateOnRefresh: true,
     });
 
     return () => {
       tl.kill();
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <div 
