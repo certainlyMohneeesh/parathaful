@@ -1,16 +1,15 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
-import { useMobileOptimizedGSAP } from '@/hooks/useMobileOptimizedGSAP';
-
-gsap.registerPlugin(ScrollTrigger);
+import { useGSAP } from '@/providers/GSAPProvider';
 
 const HorizontalGallery = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { isMobile, createMobileOptimizedAnimation } = useMobileOptimizedGSAP();
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
+  
+  const { gsap, ScrollTrigger, isMobile, isLowPerformance, settings } = useGSAP();
 
   const images = [
     { src: '/mintchutney.png', alt: 'Charcoal-grilled paratha with mint chutney.' },
@@ -20,8 +19,8 @@ const HorizontalGallery = () => {
     { src: '/flaky-bite.png', alt: 'Flaky layers being torn apart mid-bite.' },
   ];
 
-  // Duplicate images for seamless loop
-  const duplicatedImages = [...images, ...images];
+  // Only duplicate images if we have good performance
+  const duplicatedImages = isLowPerformance ? images : [...images, ...images];
 
   useEffect(() => {
     const container = containerRef.current;
@@ -29,53 +28,169 @@ const HorizontalGallery = () => {
 
     if (!container || !scrollContainer) return;
 
-    // Mobile-specific calculations
-    const itemWidth = isMobile ? 280 : 350;
-    const gap = isMobile ? 12 : 16;
-    const singleSetWidth = images.length * (itemWidth + gap);
-
-    // Force hardware acceleration
-    gsap.set(scrollContainer, { 
-      x: 0,
-      force3D: true,
-      transformStyle: "preserve-3d"
-    });
-
-    // Simplified animation for mobile
-    const tl = gsap.timeline({ repeat: -1 });
+    // Kill previous instances
+    if (timelineRef.current) {
+      timelineRef.current.kill();
+    }
     
-    tl.to(scrollContainer, {
-      x: -singleSetWidth,
-      duration: isMobile ? images.length * 1.5 : images.length * 2, // Faster on mobile
-      ease: 'none',
-      force3D: true,
-    });
+    if (scrollTriggerRef.current) {
+      scrollTriggerRef.current.kill();
+    }
+    
+    try {
+      // Mobile-specific calculations
+      const itemWidth = isMobile ? 280 : 350;
+      const gap = isMobile ? 12 : 16;
+      const singleSetWidth = images.length * (itemWidth + gap);
+      
+      // For low performance devices, use a simpler approach
+      if (isLowPerformance) {
+        // Just set the scroll container to scroll horizontally
+        gsap.set(scrollContainer, { 
+          x: 0,
+          force3D: true,
+        });
+        
+        // No animation for low-performance devices
+        return;
+      }
 
-    // Mobile-optimized scroll trigger
-    ScrollTrigger.create({
-      trigger: container,
-      start: 'top bottom',
-      end: 'bottom top',
-      onUpdate: (self) => {
-        if (!isMobile) {
+      // Force hardware acceleration
+      gsap.set(scrollContainer, { 
+        x: 0,
+        force3D: true,
+        willChange: "transform",
+        backfaceVisibility: "hidden",
+        perspective: 1000,
+      });
+
+      // Create a timeline that can be controlled by scroll
+      const tl = gsap.timeline({
+        repeat: -1,
+        paused: isMobile, // Start paused on mobile and we'll play it manually
+      });
+      
+      // Animation duration based on device capability - ENHANCED FOR DESKTOP
+      const duration = isMobile ? images.length * 1.2 : images.length * 3;
+      
+      // Enhanced desktop animations for gallery
+      if (!isMobile) {
+        // Add hover effect setup for desktop
+        const galleryItems = container.querySelectorAll('.gallery-item');
+        galleryItems.forEach(item => {
+          gsap.set(item, { transformOrigin: "center center" });
+          
+          // Add individual item hover effects for desktop
+          item.addEventListener('mouseenter', () => {
+            gsap.to(item, {
+              scale: 1.05,
+              boxShadow: "0 20px 30px rgba(0,0,0,0.15)",
+              duration: 0.4,
+              ease: "power2.out",
+              overwrite: "auto"
+            });
+          });
+          
+          item.addEventListener('mouseleave', () => {
+            gsap.to(item, {
+              scale: 1,
+              boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+              duration: 0.3,
+              ease: "power2.inOut",
+              overwrite: "auto"
+            });
+          });
+        });
+        
+        // Create more dramatic animation for desktop
+        tl.to(scrollContainer, {
+          x: -singleSetWidth,
+          duration: duration,
+          ease: "none",
+          force3D: true,
+        });
+        
+        // Enhanced subtle floating animation for desktop
+        const floatTl = gsap.timeline({ repeat: -1, yoyo: true });
+        floatTl.to(galleryItems, {
+          y: "-=10",
+          duration: 2,
+          stagger: 0.2,
+          ease: "sine.inOut"
+        });
+      } else {
+        // Simpler animation for mobile
+        tl.to(scrollContainer, {
+          x: -singleSetWidth,
+          duration: duration,
+          ease: 'none',
+          force3D: true,
+        });
+      }
+      
+      // Save timeline for cleanup
+      timelineRef.current = tl;
+      
+      // On mobile devices with good performance, play the animation continuously
+      if (isMobile && !isLowPerformance) {
+        tl.play();
+        return () => {
+          if (timelineRef.current) {
+            timelineRef.current.kill();
+          }
+        };
+      }
+      
+      // On desktop, use ScrollTrigger to control animation speed - ENHANCED
+      const st = ScrollTrigger.create({
+        trigger: container,
+        start: 'top bottom',
+        end: 'bottom top',
+        onUpdate: (self) => {
+          // Enhanced control timeline speed based on scroll position
           const progress = self.progress;
-          tl.timeScale(0.5 + progress * 1.5);
-        }
-      },
-      invalidateOnRefresh: true,
-    });
+          if (tl && !isMobile) {
+            // More dramatic speed variation on desktop
+            tl.timeScale(0.3 + progress * 2.5);
+          }
+        },
+        // Other ScrollTrigger options
+        invalidateOnRefresh: true,
+      });
+      
+      // Save ScrollTrigger instance for cleanup
+      scrollTriggerRef.current = st;
+      
+      // Play the timeline for desktop
+      if (!isMobile) {
+        tl.play();
+      }
+    } catch (error) {
+      console.error('Error setting up horizontal gallery:', error);
+      // Recover gracefully - ensure images are visible
+      if (scrollRef.current) {
+        gsap.set(scrollRef.current, { clearProps: "all" });
+      }
+    }
 
     return () => {
-      tl.kill();
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      // Clean up
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+        timelineRef.current = null;
+      }
+      
+      if (scrollTriggerRef.current) {
+        scrollTriggerRef.current.kill();
+        scrollTriggerRef.current = null;
+      }
     };
-  }, [isMobile]);
+  }, [gsap, ScrollTrigger, isMobile, isLowPerformance, settings, images.length]);
 
   return (
     <div 
       ref={containerRef}
       className="horizontal-gallery-container overflow-hidden bg-white"
-      style={{ height: '80vh' }}
     >
       <div 
         ref={scrollRef}
@@ -86,24 +201,15 @@ const HorizontalGallery = () => {
           <div 
             key={index}
             className="gallery-item flex-shrink-0 relative"
-            style={{ 
-              width: '350px', 
-              height: '500px',
-              borderRadius: '20px',
-              overflow: 'hidden'
-            }}
           >
             <Image
               src={image.src}
               alt={image.alt}
               fill
-              className="object-cover transition-transform duration-300 hover:scale-105"
-              style={{
-                objectFit: 'cover',
-                objectPosition: 'center'
-              }}
-              sizes="350px"
+              className="object-cover"
+              sizes={isMobile ? "280px" : "350px"}
               priority={index < 2}
+              loading={index < 2 ? "eager" : "lazy"}
             />
           </div>
         ))}

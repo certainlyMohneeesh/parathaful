@@ -72,9 +72,9 @@ export default function AboutUsSection() {
       ease: "power3.out"
     }, "-=0.6")
     .to(image, {
-      opacity: 1,
+      opacity: 2,
       y: 0,
-      duration: 1.2,
+      duration: 2,
       ease: "power3.out"
     }, "-=0.8")
     .to(cloud, {
