@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import Image from 'next/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,20 +19,22 @@ export default function HeroFollowUp() {
     const image = imageRef.current;
     const decorElements = decorElementsRef.current;
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
     // Set initial states
     gsap.set([leftText, rightText], {
       opacity: 0,
-      y: 100
+      y: isMobile ? 40 : 100
     });
 
     gsap.set(image, {
       opacity: 0,
-      scale: 0.8
+      scale: isMobile ? 0.95 : 0.8
     });
 
     gsap.set(decorElements, {
       opacity: 0,
-      rotation: -45,
+      rotation: -30,
       scale: 0
     });
 
@@ -49,42 +52,44 @@ export default function HeroFollowUp() {
     tl.to(leftText, {
       opacity: 1,
       y: 0,
-      duration: 1.2,
-      ease: "power3.out"
+      duration: isMobile ? 0.8 : 1.2,
+      ease: 'power2.out'
     })
     .to(rightText, {
       opacity: 1,
       y: 0,
-      duration: 1.2,
-      ease: "power3.out"
-    }, "-=0.8")
+      duration: isMobile ? 0.8 : 1.2,
+      ease: 'power2.out'
+    }, '-=0.6')
     .to(image, {
       opacity: 1,
       scale: 1,
-      duration: 1.5,
-      ease: "power3.out"
-    }, "-=1")
+      duration: isMobile ? 1 : 1.5,
+      ease: 'power2.out'
+    }, '-=0.8')
     .to(decorElements, {
       opacity: 1,
       rotation: 0,
       scale: 1,
-      duration: 0.8,
-      ease: "back.out(1.7)",
+      duration: isMobile ? 0.5 : 0.8,
+      ease: 'power2.out',
       stagger: 0.1
-    }, "-=0.5");
+    }, '-=0.5');
 
-    // Parallax effect for decorative elements
-    decorElements.forEach((element, index) => {
-      gsap.to(element, {
-        y: -50 * (index + 1),
-        scrollTrigger: {
-          trigger: section,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: true
-        }
+    // Parallax effect for decorative elements only on desktop
+    if (!isMobile) {
+      decorElements.forEach((element, index) => {
+        gsap.to(element, {
+          y: -50 * (index + 1),
+          scrollTrigger: {
+            trigger: section,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true
+          }
+        });
       });
-    });
+    }
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
@@ -99,6 +104,7 @@ const addToDecorRefs = (el: HTMLDivElement | null) => {
   return (
     <section 
       ref={sectionRef}
+      id="hero-followup"
       className="relative min-h-screen bg-gradient-to-r from-orange-100 to-pink-50 overflow-hidden"
     >
       {/* Decorative Elements */}
@@ -147,11 +153,16 @@ const addToDecorRefs = (el: HTMLDivElement | null) => {
           {/* Center Image Column */}
           <div ref={imageRef} className="flex justify-center">
             <div className="relative">
-              <div className="w-100 h-100 rounded-lg overflow-hidden shadow-2xl">
-                <img 
+              <div className="w-40 sm:w-60 md:w-80 h-40 sm:h-60 md:h-80 rounded-lg overflow-hidden shadow-2xl">
+                <Image 
                   src="/Butter-Topped Aloo Paratha_simple_compose.png" 
                   alt="Hot paratha with butter melting on top."
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 640px) 160px, (max-width: 768px) 240px, 320px"
+                  className="object-cover"
+                  loading="lazy"
+                  draggable={false}
+                  priority={false}
                 />
               </div>
               {/* Ice cream stick overlay effect */}

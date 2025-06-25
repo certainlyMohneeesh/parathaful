@@ -1,12 +1,31 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { ShoppingBag, Menu, X } from 'lucide-react';
 import { gsap } from 'gsap';
+
+const SECTION_IDS = [
+  'hero-section',
+  'hero-followup',
+  'about-section',
+  'about-section2',
+  'gallery-section',
+  'footer-section',
+];
+
+const SECTION_COLOR = {
+  'hero-section': 'white',
+  'hero-followup': 'red',
+  'about-section': 'white',
+  'about-section2': 'white',
+  'gallery-section': 'red',
+  'footer-section': 'white',
+};
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkBackground, setIsDarkBackground] = useState(true);
   const [isClient, setIsClient] = useState(false);
+  const [sectionColor, setSectionColor] = useState<'white' | 'red'>('white');
   const menuRef = useRef<HTMLDivElement>(null);
   const menuItemsRef = useRef<HTMLDivElement[]>([]);
   const backgroundRef = useRef<HTMLDivElement>(null);
@@ -120,39 +139,65 @@ export default function Navbar() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Use consistent classes for SSR
+  // IntersectionObserver to track section in view
+  const handleSectionChange = useCallback(() => {
+    const observer = new window.IntersectionObserver(
+      (entries) => {
+        // Find the section most in view
+        let maxRatio = 0;
+        let currentSection: keyof typeof SECTION_COLOR = 'hero-section';
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+            maxRatio = entry.intersectionRatio;
+            if (SECTION_COLOR.hasOwnProperty(entry.target.id)) {
+              currentSection = entry.target.id as keyof typeof SECTION_COLOR;
+            }
+          }
+        });
+        setSectionColor(SECTION_COLOR[currentSection] === 'red' ? 'red' : 'white');
+      },
+      {
+        threshold: [0.3, 0.5, 0.7, 1],
+      }
+    );
+    SECTION_IDS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return observer;
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    const observer = handleSectionChange();
+    return () => observer && observer.disconnect();
+  }, [isClient, handleSectionChange]);
+
+  // Dynamic classes
+  const isRed = sectionColor === 'red';
   const navbarClasses = `
     fixed top-0 left-0 right-0 z-40 p-6 transition-all duration-300 ease-in-out
-    ${isClient && !isDarkBackground 
-      ? 'bg-white shadow-lg' 
-      : 'bg-transparent'
-    }
+    ${isRed ? 'bg-white shadow-lg' : 'bg-transparent'}
   `;
-
   const logoClasses = `
-    font-bold text-2xl transition-colors duration-300
-    ${isClient && !isDarkBackground ? 'text-red-600' : 'text-white'}
+    font-bold text-2xl transition-colors duration-300 shrikhand-regular
+    ${isRed ? 'text-red-600' : 'text-white'}
   `;
-
   const buttonClasses = `
     border px-4 py-2 rounded transition-all duration-300
-    ${isClient && !isDarkBackground
+    ${isRed
       ? 'border-red-600 text-red-600 hover:bg-red-600 hover:text-white'
-      : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-    }
+      : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'}
   `;
-
   const menuButtonClasses = `
     border px-6 py-2 rounded transition-all duration-300 flex items-center space-x-2 cursor-pointer
-    ${isClient && !isDarkBackground
+    ${isRed
       ? 'border-red-600 text-red-600 hover:bg-red-600 hover:text-white'
-      : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-    }
+      : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'}
   `;
-
   const mobileButtonClasses = `
     md:hidden transition-colors duration-300 cursor-pointer
-    ${isClient && !isDarkBackground ? 'text-red-600' : 'text-white'}
+    ${isRed ? 'text-red-600' : 'text-white'}
   `;
 
   return (

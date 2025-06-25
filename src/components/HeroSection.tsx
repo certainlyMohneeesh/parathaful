@@ -32,7 +32,7 @@ export default function HeroSection() {
 
     // Simplified mobile animations
     const backgroundAnimation = createMobileOptimizedAnimation(background, {
-      scale: isMobile ? 1.5 : 2, // Reduced scale for mobile
+      scale: isMobile ? 1.5 : 1.5, // Reduced scale for mobile
       scrollTrigger: {
         trigger: hero,
         start: "top top",
@@ -67,6 +67,7 @@ export default function HeroSection() {
   return (
     <section 
       ref={heroRef}
+      id="hero-section"
       className="relative min-h-screen overflow-hidden"
     >
       {/* Animated Background Image */}

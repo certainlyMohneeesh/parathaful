@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useGSAP } from '@/providers/GSAPProvider';
+import Image from 'next/image';
 
 export default function AboutUsSection2() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -107,29 +108,35 @@ export default function AboutUsSection2() {
   return (
     <section 
       ref={sectionRef}
-      className="relative min-h-screen bg-red-600 overflow-hidden flex items-center justify-center"
+      id="about-section2"
+      className="relative min-h-screen bg-red-600 overflow-hidden flex items-center justify-center px-2 sm:px-4 md:px-8 touch-manipulation"
     >
       {/* Background Image */}
       <div 
         ref={backgroundImageRef}
-        className="absolute inset-0 flex items-center justify-center hardware-accelerated"
+        className="absolute inset-0 flex items-center justify-center hardware-accelerated pointer-events-none select-none"
       >
-        <div className="w-96 h-96 rounded-full overflow-hidden opacity-20">
-          <img 
+        <div className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 rounded-full overflow-hidden opacity-20">
+          <Image 
             src="/people_rolling_parathas.png" 
             alt="People laughing while rolling parathas."
-            className="w-full h-full object-cover rounded-full"
+            fill
+            sizes="(max-width: 640px) 256px, (max-width: 768px) 320px, 384px"
+            priority={false}
+            className="object-cover rounded-full"
             loading="lazy"
+            draggable={false}
           />
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-6">
+      <div className="relative z-10 w-full max-w-3xl mx-auto px-2 sm:px-4 md:px-8">
         <div className="text-center">
           <h2 
             ref={headlineRef}
-            className="text-4xl md:text-6xl lg:text-8xl font-black text-white leading-tight max-w-6xl mx-auto hardware-accelerated"
+            className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-black text-white leading-tight max-w-full mx-auto hardware-accelerated"
+            style={{ wordBreak: 'break-word' }}
           >
             THIS IS PATAKHA PARATHA. IT'LL MELT HEARTS, FILL STOMACHS, AND SPICE UP MEMORIES.
           </h2>

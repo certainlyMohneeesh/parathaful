@@ -15,22 +15,24 @@ const Footer = () => {
 
     if (!footer || !form) return;
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
     // Animate footer entrance
     gsap.fromTo(footer, 
       { 
-        y: 100,
+        y: isMobile ? 40 : 100,
         opacity: 0 
       },
       {
         y: 0,
         opacity: 1,
-        duration: 1,
-        ease: "power3.out",
+        duration: isMobile ? 0.7 : 1,
+        ease: 'power2.out',
         scrollTrigger: {
           trigger: footer,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse"
+          start: 'top 80%',
+          end: 'bottom 20%',
+          toggleActions: 'play none none reverse'
         }
       }
     );
@@ -39,19 +41,19 @@ const Footer = () => {
     const formElements = form.querySelectorAll('.form-element');
     gsap.fromTo(formElements,
       {
-        y: 50,
+        y: isMobile ? 20 : 50,
         opacity: 0
       },
       {
         y: 0,
         opacity: 1,
-        duration: 0.8,
+        duration: isMobile ? 0.5 : 0.8,
         stagger: 0.1,
-        ease: "power2.out",
+        ease: 'power2.out',
         scrollTrigger: {
           trigger: form,
-          start: "top 70%",
-          toggleActions: "play none none reverse"
+          start: 'top 70%',
+          toggleActions: 'play none none reverse'
         }
       }
     );
@@ -68,17 +70,17 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 };
 
   return (
-    <footer ref={footerRef} className="footer-section">
+    <footer ref={footerRef} id="footer-section" className="footer-section px-2 sm:px-4">
       <div className="footer-container">
         <div className="footer-content">
           <h2 className="footer-title">
            GOT A HUNGRY QUESTION? WE'VE GOT A STUFFED ANSWER.
           </h2>
           
-          <form ref={formRef} onSubmit={handleSubmit} className="contact-form">
+          <form ref={formRef} onSubmit={handleSubmit} className="contact-form" autoComplete="on" aria-label="Contact form">
             <div className="form-row">
               <div className="form-element form-group">
-                <select className="form-select" required>
+                <select className="form-select min-h-12" required aria-label="Subject">
                   <option value="">Subject of address *</option>
                   <option value="general">General Inquiry</option>
                   <option value="support">Support</option>
@@ -91,8 +93,9 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
                 <input
                   type="text"
                   placeholder="City"
-                  className="form-input"
+                  className="form-input min-h-12"
                   required
+                  aria-label="City"
                 />
               </div>
             </div>
@@ -102,8 +105,9 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
                 <input
                   type="text"
                   placeholder="Your name"
-                  className="form-input"
+                  className="form-input min-h-12"
                   required
+                  aria-label="Your name"
                 />
               </div>
               
@@ -111,8 +115,9 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
                 <input
                   type="tel"
                   placeholder="Phone"
-                  className="form-input"
+                  className="form-input min-h-12"
                   required
+                  aria-label="Phone"
                 />
               </div>
               
@@ -120,8 +125,9 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
                 <input
                   type="email"
                   placeholder="Email"
-                  className="form-input"
+                  className="form-input min-h-12"
                   required
+                  aria-label="Email"
                 />
               </div>
             </div>
@@ -129,14 +135,15 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             <div className="form-element form-group full-width">
               <textarea
                 placeholder="Message"
-                className="form-textarea"
+                className="form-textarea min-h-12"
                 rows={4}
                 required
+                aria-label="Message"
               ></textarea>
             </div>
 
             <div className="form-element">
-              <button type="submit" className="submit-btn">
+              <button type="submit" className="submit-btn min-h-12 min-w-12 touch-manipulation">
                 SEND THE PARATHA
               </button>
             </div>
